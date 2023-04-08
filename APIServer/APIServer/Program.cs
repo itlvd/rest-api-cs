@@ -1,3 +1,6 @@
+using APIServer.Controllers.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace APIServer
 {
     public class Program
@@ -9,6 +12,10 @@ namespace APIServer
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddDbContext<BookDBContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("BookDB"));
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
