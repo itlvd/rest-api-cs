@@ -11,6 +11,10 @@ namespace APIServer.Controllers.Data
         [Required]
         public string CategoryName { get; set; } = string.Empty;
 
-        public virtual ICollection<Book> Books { get; set; }
+        public ICollection<CategoriesOfBook> CategoriesOfBooks { get; set; }
+        public Category()
+        {
+            CategoriesOfBooks = new List<CategoriesOfBook>();
+        }
     }
 }

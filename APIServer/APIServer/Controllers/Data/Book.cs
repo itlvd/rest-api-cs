@@ -22,8 +22,15 @@ namespace APIServer.Controllers.Data
         [Range(0,double.MaxValue)]
         public double Price { get; set; }
 
-        public int? CategoryID { get; set; }
-        [ForeignKey("CategoryID")]
-        public Category Category { get; set; }
+        // public int? CategoryID { get; set; }
+        // [ForeignKey("CategoryID")]
+        // public Category Category { get; set; }
+
+        public ICollection<CategoriesOfBook> CategoriesOfBooks { get; set; }
+
+        public Book()
+        {
+            CategoriesOfBooks = new List<CategoriesOfBook>();
+        }
     }
 }

@@ -1,5 +1,7 @@
 using APIServer.Controllers.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace APIServer
 {
@@ -16,6 +18,10 @@ namespace APIServer
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("BookDB"));
             });
+            builder.Services.AddAutoMapper(typeof(Program));
+
+            
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -26,8 +32,24 @@ namespace APIServer
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(
+                    option =>
+                    {
+                        option.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Shop V1");
+                        option.RoutePrefix = string.Empty;
+                    });
             }
+            else
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(
+                    option =>
+                    {
+                        option.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Shop V1");
+                        option.RoutePrefix = string.Empty;
+                    });
+            }
+            
 
             app.UseHttpsRedirection();
 

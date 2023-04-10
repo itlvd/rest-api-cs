@@ -36,6 +36,8 @@ namespace APIServer.Controllers
             return Ok(Category);
         }
 
+        
+
 
         [HttpPost]
         public IActionResult addNewCategory(CategoryModel category)

@@ -1,6 +1,11 @@
-﻿using APIServer.Controllers.Models;
-using Microsoft.AspNetCore.Http;
+﻿using APIServer.Controllers.Data;
+using APIServer.Controllers.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace APIServer.Controllers
 {
@@ -8,32 +13,20 @@ namespace APIServer.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        public static List<Book> books = new List<Book>() {
-        new Book
-        {
-            Id = 1,
-            Title = "Tôi thấy hoa vàng trên cỏ xanh",
-            Author = "Nguyễn Nhật Ánh",
-            DatePublished = "12/07/2022",
-            Price = 23000,
-            Category = new string[] {"tiểu thuyết", "truyện thiếu nhi" },
-            Image = "https://image.com",
-        }, 
+        private readonly BookDBContext _context;
+        private readonly IMapper _mapper;
 
-        new Book
+        public BookController(BookDBContext context, IMapper mapper)
         {
-            Id = 2,
-            Title = "Hai số phận",
-            Author = "Feffer",
-            DatePublished = "21/01/2023",
-            Price = 23000,
-            Category = new string[] {"tiểu thuyết", "truyện nước ngoài" },
-            Image = "https://image.com",
+            _context = context;
+            _mapper = mapper;
         }
-        };
 
         [HttpGet] public IActionResult GetBook()
         {
+            var books = _context.Books.ToList();
+            //var bookReturn = _mapper.Map<List<BookReturnModel>>(books);
+
             return Ok(books);
         }
 
@@ -41,11 +34,17 @@ namespace APIServer.Controllers
         {
             try
             {
-                var book = books.SingleOrDefault(x => x.Id == id);
+                var book = _context.Books.SingleOrDefault(x => x.Id == id);
                 if(book == null)
                 {
                     return NotFound();
                 }
+                // var bookReturn = _mapper.Map<BookReturnModel>(book);
+                // var categoryOfBook = _context.CategoriesOfBooks.ToList();
+                // var listCategoryOfBook =    from c in categoryOfBook
+                //                             where c.BookId == id
+                //                             select c.Category.CategoryName;
+                // bookReturn.Category = listCategoryOfBook.ToArray();
                 return Ok(book);
             }catch (Exception ex)
             {
@@ -53,30 +52,57 @@ namespace APIServer.Controllers
             }
         }
 
-        [HttpPost] public IActionResult Create(BookTemplate newbook)
+        [HttpPost] public IActionResult Create(BookModel newbook)
         {
+            
+            //Create a new book
             var book = new Book()
             {
-                Id = 1,
                 Title = newbook.Title,
                 Author = newbook.Author,
                 DatePublished = newbook.DatePublished,
                 Price = newbook.Price,
-                Category = newbook.Category,
-                Image = newbook.Image,
+                Image = base64ToImgurURL(newbook.Image).Result,
+
             };
-            books.Add(book);
+            _context.Books.Add(book);
+            _context.SaveChanges();
+
+            //Add Categories to database
+            /*if (newbook.Category[0].GetType() != typeof(int))
+            {
+                return ValidationProblem("Categories must be an ID.");
+            }
+
+            foreach (var categoryId in newbook.Category)
+            {
+                var lastShowPieceId = _context.Books.Max(x => x.Id);
+                var bookId = _context.Books.FirstOrDefault(x => x.Id == lastShowPieceId)!.Id;
+                var categoryNew = new CategoriesOfBook()
+                {
+                    BookId = bookId,
+                    CategoryId = categoryId,
+                    
+                };
+
+                _context.CategoriesOfBooks.Add(categoryNew);
+                _context.SaveChanges();
+
+            }*/
+            
+
+
             return Ok(new {
                 Success = true, Data = book
             });
         }
 
 
-        [HttpPut] public IActionResult updateBook(int id, BookTemplate bookEdit)
+        [HttpPut] public IActionResult UpdateBook(int id, BookModel bookEdit)
         {
             try
             {
-                var book = books.SingleOrDefault(book => book.Id == id);
+                var book = _context.Books.SingleOrDefault(book => book.Id == id);
                 if (book == null)
                 {
                     return NotFound();
@@ -91,24 +117,24 @@ namespace APIServer.Controllers
                 book.Author = bookEdit.Author;
                 book.DatePublished = bookEdit.DatePublished;
                 book.Price = bookEdit.Price;
-                book.Category = bookEdit.Category;
-                book.Image = bookEdit.Image;
-                return Ok(book);
+                book.Image = bookEdit.Image.Contains("http") ? bookEdit.Image : base64ToImgurURL(bookEdit.Image).Result;
+                _context.SaveChanges();
+            return Ok(book);
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                return BadRequest(Ex.Message);
+                return BadRequest(ex.Message);
             }
             
 
         }
 
 
-        [HttpDelete("{id}")] public IActionResult deleteBook(int id)
+        [HttpDelete("{id}")] public IActionResult DeleteBook(int id)
         {
             try
             {
-                var book = books.SingleOrDefault(x => x.Id == id);
+                var book = _context.Books.SingleOrDefault(x => x.Id == id);
 
                 if (book == null)
                 {
@@ -120,10 +146,22 @@ namespace APIServer.Controllers
                     return NotFound();
                 }
 
-                books.Remove(book);
+                _context.Books.Remove(book);
+                _context.SaveChanges();
                 return Ok();
             }
             catch { return BadRequest(); } 
+        }
+
+        public static async Task<String> base64ToImgurURL(string base64)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", "3dc706475ba11db");
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "text/plain");
+            var response = await httpClient.PostAsync("https://api.imgur.com/3/image", new StringContent(base64));
+            var stringcontent = await response.Content.ReadAsStringAsync();
+            var ImgurResponseModel = JsonConvert.DeserializeObject<ImgurRespondModel>(stringcontent);
+            return ImgurResponseModel.data.link;
         }
     }
 }
