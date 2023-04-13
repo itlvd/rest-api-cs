@@ -9,6 +9,8 @@
         public string Image { get; set; } // base64
 
         public double Price { get; set; }
+
+        public int Amount { get; set; }
         //public int[] Category { get; set; }
     }
 

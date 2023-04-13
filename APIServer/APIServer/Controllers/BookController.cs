@@ -63,6 +63,7 @@ namespace APIServer.Controllers
                 DatePublished = newbook.DatePublished,
                 Price = newbook.Price,
                 Image = base64ToImgurURL(newbook.Image).Result,
+                Amount = newbook.Amount
 
             };
             _context.Books.Add(book);

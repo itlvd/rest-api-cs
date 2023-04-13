@@ -22,6 +22,8 @@ namespace APIServer.Controllers.Data
         [Range(0,double.MaxValue)]
         public double Price { get; set; }
 
+        public int Amount { get; set; }
+
         // public int? CategoryID { get; set; }
         // [ForeignKey("CategoryID")]
         // public Category Category { get; set; }
