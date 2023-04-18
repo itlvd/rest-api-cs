@@ -74,6 +74,30 @@ namespace APIServer.Controllers
             return Ok(name);
         }
 
+        [HttpDelete("{bookID}/{categoryID}")]
+        public IActionResult Delete(int bookID, int categoryID)
+        {
+            try
+            {
+                var item = _context.CategoriesOfBooks.SingleOrDefault(
+                    e => e.BookId == bookID && e.CategoryId == categoryID
+                    );
+
+                if( item == null)
+                {
+                    return NotFound();
+                }
+
+                _context.CategoriesOfBooks.Remove(item);
+                _context.SaveChanges();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         private Book _GetBookById(int id)
         {
             var book = _context.Books.SingleOrDefault(e => e.Id == id);

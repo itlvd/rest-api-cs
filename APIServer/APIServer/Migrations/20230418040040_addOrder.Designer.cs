@@ -3,6 +3,7 @@ using APIServer.Controllers.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(BookDBContext))]
-    partial class BookDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230418040040_addOrder")]
+    partial class addOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace APIServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Book", (string)null);
+                    b.ToTable("Book");
                 });
 
             modelBuilder.Entity("APIServer.Controllers.Data.CategoriesOfBook", b =>
@@ -86,7 +89,7 @@ namespace APIServer.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("APIServer.Controllers.Data.Order", b =>
@@ -118,7 +121,7 @@ namespace APIServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("APIServer.Controllers.Data.OrderDetail", b =>
@@ -136,7 +139,7 @@ namespace APIServer.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("OrderDetail", (string)null);
+                    b.ToTable("OrderDetail");
                 });
 
             modelBuilder.Entity("APIServer.Controllers.Data.CategoriesOfBook", b =>

@@ -8,9 +8,13 @@ namespace APIServer.Controllers.Helper
     {
         public AutoMapperBook()
         {
-            CreateMap<Book, BookReturnModel>().ReverseMap();
             CreateMap<Book, BookModel>().ReverseMap();
-            CreateMap<BookModel, BookReturnModel>().ReverseMap();
+            CreateMap<Order, OrderModel>()
+                .ReverseMap();
+            CreateMap<OrderDetailModel,OrderDetail >()
+                .ReverseMap();
         }
+
+        
     }
 }

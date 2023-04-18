@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace APIServer.Controllers.Data
 {
@@ -29,7 +30,8 @@ namespace APIServer.Controllers.Data
         // public Category Category { get; set; }
 
         public ICollection<CategoriesOfBook> CategoriesOfBooks { get; set; }
-
+        [JsonIgnore]
+        public ICollection<OrderDetail> OrderDetail { get; set; }
         public Book()
         {
             CategoriesOfBooks = new List<CategoriesOfBook>();

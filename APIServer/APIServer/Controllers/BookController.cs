@@ -24,10 +24,19 @@ namespace APIServer.Controllers
 
         [HttpGet] public IActionResult GetBook()
         {
-            var books = _context.Books.ToList();
-            //var bookReturn = _mapper.Map<List<BookReturnModel>>(books);
 
-            return Ok(books);
+            try
+            {
+                var books = _context.Books.ToList();
+                //var bookReturn = _mapper.Map<List<BookReturnModel>>(books);
+
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpGet("{id}")] public IActionResult GetBook(int id)

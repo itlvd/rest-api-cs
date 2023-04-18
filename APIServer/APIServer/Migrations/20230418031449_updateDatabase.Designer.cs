@@ -3,6 +3,7 @@ using APIServer.Controllers.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(BookDBContext))]
-    partial class BookDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230418031449_updateDatabase")]
+    partial class updateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace APIServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Book", (string)null);
+                    b.ToTable("Book");
                 });
 
             modelBuilder.Entity("APIServer.Controllers.Data.CategoriesOfBook", b =>
@@ -86,57 +89,7 @@ namespace APIServer.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Category", (string)null);
-                });
-
-            modelBuilder.Entity("APIServer.Controllers.Data.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
-
-                    b.Property<string>("dateCreated")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Orders", (string)null);
-                });
-
-            modelBuilder.Entity("APIServer.Controllers.Data.OrderDetail", b =>
-                {
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
-
-                    b.HasKey("OrderId", "BookId");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("OrderDetail", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("APIServer.Controllers.Data.CategoriesOfBook", b =>
@@ -160,40 +113,14 @@ namespace APIServer.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("APIServer.Controllers.Data.OrderDetail", b =>
-                {
-                    b.HasOne("APIServer.Controllers.Data.Book", "Book")
-                        .WithMany("OrderDetail")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("APIServer.Controllers.Data.Order", "Order")
-                        .WithMany("OrderDetail")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("APIServer.Controllers.Data.Book", b =>
                 {
                     b.Navigation("CategoriesOfBooks");
-
-                    b.Navigation("OrderDetail");
                 });
 
             modelBuilder.Entity("APIServer.Controllers.Data.Category", b =>
                 {
                     b.Navigation("CategoriesOfBooks");
-                });
-
-            modelBuilder.Entity("APIServer.Controllers.Data.Order", b =>
-                {
-                    b.Navigation("OrderDetail");
                 });
 #pragma warning restore 612, 618
         }

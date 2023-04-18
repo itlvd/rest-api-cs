@@ -11,6 +11,8 @@ namespace APIServer.Controllers.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<CategoriesOfBook> CategoriesOfBooks { get; set; } 
+
+        public DbSet<Order> Orders { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,6 +36,30 @@ namespace APIServer.Controllers.Data
                     .WithMany(e => e.CategoriesOfBooks)
                     .HasForeignKey(e => e.BookId)
                     .HasConstraintName("FK_CategoriesOfBooks_Book");
+
+            });
+
+
+            modelBuilder.Entity<OrderDetail>(e =>
+            {
+
+                e.HasKey(e =>
+                new {
+                    e.OrderId,
+                    e.BookId
+                });
+                e.Property(e => e.BookId).IsRequired();
+                e.Property(e => e.OrderId).IsRequired();
+
+                /*e.HasOne(e => e.Book)
+                    .WithMany(e => e.OrderDetail)
+                    .HasForeignKey(e => e.BookId)
+                    .HasConstraintName("FK_OrderDetail_Book");
+
+                e.HasOne(e => e.Order)
+                    .WithMany(e => e.OrderDetail)
+                    .HasForeignKey(e => e.OrderId)
+                    .HasConstraintName("FK_CategoriesOfBooks_Book");*/
 
             });
         }

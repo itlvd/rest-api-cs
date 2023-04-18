@@ -72,5 +72,26 @@ namespace APIServer.Controllers
             _context.SaveChanges();
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult deleteCategory(int id)
+        {
+            try
+            {
+                var item = _context.Categories.SingleOrDefault(e => e.CategoryId == id);
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                _context.Categories.Remove(item);
+                _context.SaveChanges();
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
     }
 }

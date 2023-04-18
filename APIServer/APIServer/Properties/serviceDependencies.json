@@ -1,9 +1,17 @@
 {
   "dependencies": {
     "mssql1": {
+      "ignored": "true",
       "type": "mssql",
-      "connectionId": "ConnectionStrings:BookDB",
-      "dynamicId": null
+      "connectionId": "DBConnection"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "DBConnection"
+    },
+    "mssql3": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:BookDB"
     }
   }
 }
