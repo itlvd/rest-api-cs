@@ -56,13 +56,34 @@ namespace APIServer.Controllers
         [HttpPost]
         public ActionResult Post(OrderModel order)
         {
+            var validAmount = false;
             try
             {
                 var newOrder = _mapper.Map<Order>(order);
 
                 _context.Orders.Add(newOrder);
-                _context.SaveChanges();
-                return Ok(newOrder);
+
+                newOrder.OrderDetail.ForEach(e =>
+                {
+                    var book = _context.Books.SingleOrDefault(book => book.Id == e.BookId);
+
+                    book.Amount -= e.Amount;
+
+                    if(book.Amount >= 0)
+                    {
+                        validAmount = true;
+                    }
+                });
+
+                if (validAmount == true)
+                {
+                    _context.SaveChanges();
+                    return Ok(newOrder);
+                }
+                else
+                {
+                    return BadRequest("There are books which out of stock. Please check again!");
+                }
             }
             catch (Exception ex){ 
                 return NotFound(ex.Message);
@@ -74,12 +95,21 @@ namespace APIServer.Controllers
         {
             try
             {
-                var orderItem = _context.Orders.SingleOrDefault(e => e.Id == id);
+                var orderItem = _context.Orders.Include(e => e.OrderDetail)
+                    .ThenInclude(e => e.Book).SingleOrDefault(e => e.Id == id);
 
                 if (orderItem == null)
                 {
                     return NotFound();
                 }
+
+                orderItem.OrderDetail.ForEach(e =>
+                {
+                    var book = _context.Books.SingleOrDefault(book => book.Id == e.BookId);
+
+                    book.Amount += e.Amount;
+                });
+
                 _context.Orders.Remove(orderItem);
                 _context.SaveChanges();
                 return NoContent();
